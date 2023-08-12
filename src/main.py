@@ -1,6 +1,4 @@
-import json
-
-from src.utils import get_executed
+from src.utils import get_executed, load_operations_file
 
 
 def main():
@@ -12,9 +10,8 @@ def main():
     Маскировка номера карты в формате XXXX XX** **** XXXX
     Маскировка номер счета в формате **XXXX
     """
-    with open('operations.json', 'r', encoding='utf-8') as f:
-        all_operations = json.load(f)
 
+    all_operations = load_operations_file('operations.json')
     executed_operations = get_executed(all_operations)
 
     for operation in executed_operations:
