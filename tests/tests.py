@@ -1,4 +1,5 @@
-from src.utils import get_executed, load_operations_file
+from src.utils import get_executed, load_operations_file, format_date
+import pytest
 
 
 def test_get_executed():
@@ -36,3 +37,11 @@ def test_load_operations_file():
             "operationAmount": {"amount": "67314.70", "currency": {"name": "руб.", "code": "RUB"}},
             "description": "Перевод организации", "from": "Visa Platinum 1246377376343588",
             "to": "Счет 14211924144426031657"}]
+
+
+def test_format_date():
+    assert format_date("2019-12-08T22:46:21.935582") == "08.12.2019"
+    with pytest.raises(ValueError):
+        format_date("2019:46:21.935582")
+    with pytest.raises(TypeError):
+        format_date(None)

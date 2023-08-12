@@ -1,9 +1,8 @@
-from src.utils import get_executed, load_operations_file
+from src.utils import get_executed, load_operations_file, format_date
 
 
 def main():
     """
-    Считывание json file
     Выведение 5 последних выполненных (EXECUTED) операций
     Форматирование списка по дате(сверху списка находятся последние)
     Форматирование даты в формате ДД.ММ.ГГГГ
@@ -16,9 +15,10 @@ def main():
 
     for operation in executed_operations:
         try:
-            print(operation["date"], operation["description"])
+            print(format_date(operation["date"]), operation["description"])
             print(operation["from"], "->", operation["to"])
             print(operation["operationAmount"]["amount"], operation["operationAmount"]["currency"]["name"])
+            print()
         except KeyError:
             continue
 
