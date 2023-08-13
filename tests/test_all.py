@@ -1,9 +1,11 @@
 from datetime import datetime
 
 from src.utils import get_executed, load_operations_file, format_operation_date, get_date_from_operation, \
-    sorted_operations
+    sorted_operations, mask_acc_number
 import pytest
+from pathlib import Path
 
+BASE_DIR = Path(__file__).resolve(strict=True).parent
 
 def test_get_executed():
     assert get_executed([{"id": 863064926, "state": "EXECUTED", "date": "2019-12-08T22:46:21.935582",
@@ -32,7 +34,9 @@ def test_get_executed():
 
 
 def test_load_operations_file():
-    assert load_operations_file('test_operations.json') == [
+    print('ALLO BLYAD', BASE_DIR)
+
+    assert load_operations_file(BASE_DIR / 'test_operations.json') == [
         {"id": 863064926, "state": "EXECUTED", "date": "2019-12-08T22:46:21.935582",
          "operationAmount": {"amount": "41096.24", "currency": {"name": "USD", "code": "USD"}},
          "description": "Открытие вклада", "to": "Счет 90424923579946435907"},
@@ -64,27 +68,35 @@ def test_get_date_from_operation():
 
 def test_sorted_operations():
     op_list = [{"id": 416017997, "state": "EXECUTED", "date": "2019-05-07T01:32:37.142797",
-        "operationAmount": {"amount": "29033.65", "currency": {"name": "USD", "code": "USD"}},
-        "description": "Перевод с карты на карту", "from": "МИР 4878656375033856", "to": "Maestro 6890749237669619"},
-        {"id": 556488059, "state": "CANCELED", "date": "2019-05-17T01:50:00.166954",
-            "operationAmount": {"amount": "74604.56", "currency": {"name": "USD", "code": "USD"}},
-            "description": "Перевод с карты на карту", "from": "МИР 8021883699486544",
-            "to": "Visa Gold 8702717057933248"},
-        {"id": 74897425, "state": "EXECUTED", "date": "2019-02-08T09:09:35.038506",
-            "operationAmount": {"amount": "62654.30", "currency": {"name": "USD", "code": "USD"}},
-            "description": "Перевод организации", "from": "Счет 28429442875257789335",
-            "to": "Счет 95473010446151855633"}, ]
-    sorted_operations(op_list)
-    assert op_list == [
+                "operationAmount": {"amount": "29033.65", "currency": {"name": "USD", "code": "USD"}},
+                "description": "Перевод с карты на карту", "from": "МИР 4878656375033856",
+                "to": "Maestro 6890749237669619"},
                {"id": 556488059, "state": "CANCELED", "date": "2019-05-17T01:50:00.166954",
-                   "operationAmount": {"amount": "74604.56", "currency": {"name": "USD", "code": "USD"}},
-                   "description": "Перевод с карты на карту", "from": "МИР 8021883699486544",
-                   "to": "Visa Gold 8702717057933248"},
-               {"id": 416017997, "state": "EXECUTED", "date": "2019-05-07T01:32:37.142797",
-                   "operationAmount": {"amount": "29033.65", "currency": {"name": "USD", "code": "USD"}},
-                   "description": "Перевод с карты на карту", "from": "МИР 4878656375033856",
-                   "to": "Maestro 6890749237669619"},
+                "operationAmount": {"amount": "74604.56", "currency": {"name": "USD", "code": "USD"}},
+                "description": "Перевод с карты на карту", "from": "МИР 8021883699486544",
+                "to": "Visa Gold 8702717057933248"},
                {"id": 74897425, "state": "EXECUTED", "date": "2019-02-08T09:09:35.038506",
-                   "operationAmount": {"amount": "62654.30", "currency": {"name": "USD", "code": "USD"}},
-                   "description": "Перевод организации", "from": "Счет 28429442875257789335",
-                   "to": "Счет 95473010446151855633"}]
+                "operationAmount": {"amount": "62654.30", "currency": {"name": "USD", "code": "USD"}},
+                "description": "Перевод организации", "from": "Счет 28429442875257789335",
+                "to": "Счет 95473010446151855633"}, ]
+    sorted_operations(op_list)
+    assert op_list == [{"id": 556488059, "state": "CANCELED", "date": "2019-05-17T01:50:00.166954",
+                        "operationAmount": {"amount": "74604.56", "currency": {"name": "USD", "code": "USD"}},
+                        "description": "Перевод с карты на карту", "from": "МИР 8021883699486544",
+                        "to": "Visa Gold 8702717057933248"},
+        {"id": 416017997, "state": "EXECUTED", "date": "2019-05-07T01:32:37.142797",
+         "operationAmount": {"amount": "29033.65", "currency": {"name": "USD", "code": "USD"}},
+         "description": "Перевод с карты на карту", "from": "МИР 4878656375033856", "to": "Maestro 6890749237669619"},
+        {"id": 74897425, "state": "EXECUTED", "date": "2019-02-08T09:09:35.038506",
+         "operationAmount": {"amount": "62654.30", "currency": {"name": "USD", "code": "USD"}},
+         "description": "Перевод организации", "from": "Счет 28429442875257789335", "to": "Счет 95473010446151855633"}]
+
+
+def test_mask_acc_number():
+    assert mask_acc_number("МИР 4878656375033856") == "МИР 4878 65** **** 3856"
+    assert mask_acc_number("Счет 95473010446151855633") == "Счет **5633"
+    assert mask_acc_number("Visa Gold 8702717057933248") == "Visa Gold 8702 71** **** 3248"
+    with pytest.raises(ValueError):
+        mask_acc_number("VisaGold8702717057933248")
+    with pytest.raises(ValueError):
+        mask_acc_number("")

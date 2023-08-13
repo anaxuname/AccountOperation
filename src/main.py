@@ -1,11 +1,10 @@
-from src.utils import get_executed, load_operations_file, sorted_operations, format_operation_date
+from src.utils import get_executed, load_operations_file, sorted_operations, format_operation_date, mask_acc_number
 
 
 def main():
     """
+    Основная логика программы
     Выведение 5 последних выполненных (EXECUTED) операций
-    Маскировка номера карты в формате XXXX XX** **** XXXX
-    Маскировка номер счета в формате **XXXX
     """
 
     all_operations = load_operations_file('operations.json')
@@ -21,7 +20,7 @@ def main():
         op_currency = operation.get("operationAmount", {}).get("currency", {}).get("name")
         if op_date and op_description and op_from and op_to and op_amount and op_currency:
             print(format_operation_date(operation), op_description)
-            print(op_from, "->", op_to)
+            print(mask_acc_number(op_from), "->", mask_acc_number(op_to))
             print(op_amount, op_currency)
             print()
             i += 1

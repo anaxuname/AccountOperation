@@ -40,3 +40,14 @@ def sorted_operations(operations: list):
     Форматирование списка по дате(сверху списка находятся последние)
     """
     operations.sort(key=get_date_from_operation, reverse=True)
+
+
+def mask_acc_number(acc_number: str):
+    """
+    Маскировка номера карты в формате XXXX XX** **** XXXX
+    Маскировка номера счета в формате **XXXX
+    """
+    type_, num = acc_number.rsplit(maxsplit=1)
+    if type_ == 'Счет':
+        return f"{type_} **{num[-4:]}"
+    return f"{type_} {num[:4]} {num[4:6]}** **** {num[-4:]}"
