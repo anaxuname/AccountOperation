@@ -21,9 +21,22 @@ def get_executed(all_operations):
     return result
 
 
-def format_date(operation_date: str):
+def format_operation_date(operation_date: dict):
     """
     Форматирование даты перевода в формате ДД.ММ.ГГГГ
     """
-    op_date = datetime.fromisoformat(operation_date)
-    return op_date.strftime("%d.%m.%Y")
+    return get_date_from_operation(operation_date).strftime("%d.%m.%Y")
+
+
+def get_date_from_operation(op: dict):
+    """
+    Функция достает строку с датой операции и конвертирует ее в объект datetime
+    """
+    return datetime.fromisoformat(op.get('date'))
+
+
+def sorted_operations(operations: list):
+    """
+    Форматирование списка по дате(сверху списка находятся последние)
+    """
+    operations.sort(key=get_date_from_operation, reverse=True)
