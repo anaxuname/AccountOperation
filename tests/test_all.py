@@ -35,7 +35,6 @@ def test_get_executed():
 
 
 def test_load_operations_file():
-    print('ALLO BLYAD', BASE_DIR)
 
     assert load_operations_file(BASE_DIR / 'test_operations.json') == [
         {"id": 863064926, "state": "EXECUTED", "date": "2019-12-08T22:46:21.935582",
