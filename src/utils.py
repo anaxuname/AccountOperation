@@ -51,3 +51,25 @@ def mask_acc_number(acc_number: str):
     if type_ == 'Счет':
         return f"{type_} **{num[-4:]}"
     return f"{type_} {num[:4]} {num[4:6]}** **** {num[-4:]}"
+
+
+def print_top_operations(executed_operations, max_operations=5):
+    """
+    Выведение 5 последних выполненных (EXECUTED) операций
+    """
+    i = 0
+    for operation in executed_operations:
+        op_date = operation.get("date")
+        op_description = operation.get("description")
+        op_from = operation.get("from")
+        op_to = operation.get("to")
+        op_amount = operation.get("operationAmount", {}).get("amount")
+        op_currency = operation.get("operationAmount", {}).get("currency", {}).get("name")
+        if op_date and op_description and op_from and op_to and op_amount and op_currency:
+            print(format_operation_date(operation), op_description)
+            print(mask_acc_number(op_from), "->", mask_acc_number(op_to))
+            print(op_amount, op_currency)
+            print()
+            i += 1
+            if i == max_operations:
+                break
